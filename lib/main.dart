@@ -1,32 +1,41 @@
-import 'package:flutter/material.dart';
-import 'package:myapp/models/user.dart';
-import 'package:myapp/screens/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:myapp/services/auth.dart';
+import 'package:myapp/notifier/inventory_notifier.dart';
+import 'package:myapp/screens/feed.dart';
+import 'package:myapp/screens/login.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'notifier/auth_notifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+      runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => AuthNotifier(),
+          ),
+        ChangeNotifierProvider(
+          create: (context) => InventoryNotifier(),
+        )
+        ],
+        child: MyApp(),
+      ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<MyUser?>.value(
-      value: AuthService().user,
-      initialData: null,
-      child: MaterialApp(
-        home: Wrapper(),
+    return MaterialApp(
+      title: 'Coding with Curry',
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+        accentColor: Colors.blue,
+      ),
+      home: Consumer<AuthNotifier>(
+        builder: (context, notifier, child) {
+          return notifier.user != null ? Feed() : Login();
+        },
       ),
     );
   }
 }
-
-
-
-
