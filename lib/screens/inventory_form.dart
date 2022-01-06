@@ -3,11 +3,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/services/database.dart';
 import 'package:myapp/model/inventory.dart';
 import 'package:myapp/notifier/inventory_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 
 class UksInventory extends StatefulWidget {
@@ -31,8 +33,10 @@ class _UksInventoryState extends State<UksInventory> {
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
   TextEditingController subingredientController = new TextEditingController();
+  TextEditingController dateinput = TextEditingController();
   String? currentInventory;
-  final List<String> mycategory = ['','Obat Cair','Tablet','Kapsul','Obat oles','Obat Tetes','Inhaler'];
+
+  final List<String> mycategory = ['','Obat Cair','Tablet','Kapsul','Obat Oles','Obat Tetes','Inhaler','Peralatan Kesehatan','Lain-lain'];
 
 
   @override
@@ -60,18 +64,21 @@ class _UksInventoryState extends State<UksInventory> {
       print('showing image from local file');
 
       return Stack(
-        alignment: AlignmentDirectional.bottomCenter,
+        alignment: AlignmentDirectional.center,
         children: <Widget>[
           Image.file(File( _imageFile!.path ),
-            fit: BoxFit.cover,
-            height: 250,
+            fit: BoxFit.fill,
+            height: 200,
           ),
-          FlatButton(
-            padding: EdgeInsets.all(16),
-            color: Colors.black54,
+          TextButton(
+            //padding: EdgeInsets.all(16),
+              style: TextButton.styleFrom(
+              backgroundColor: Colors.black26,
+              elevation: 1.0,
+            ),
             child: Text(
-              'Change Image',
-              style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w400),
+              'Ubah Gambar',
+              style: GoogleFonts.openSans(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w400),
             ),
             onPressed: () => _getLocalImage(),
           )
@@ -82,19 +89,22 @@ class _UksInventoryState extends State<UksInventory> {
       print('showing image from url');
 
       return Stack(
-        alignment: AlignmentDirectional.bottomCenter,
+        alignment: AlignmentDirectional.center,
         children: <Widget>[
           Image.network(
             _imageUrl,
-            fit: BoxFit.cover,
-            height: 250,
+            fit: BoxFit.fitWidth,
+           // height: 250,
           ),
-          FlatButton(
-            padding: EdgeInsets.all(16),
-            color: Colors.black54,
+          TextButton(
+            //padding: EdgeInsets.all(16),
+              style: TextButton.styleFrom(
+              backgroundColor: Colors.black26,
+              elevation: 1.0,
+            ),
             child: Text(
-              'Change Image',
-              style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w400),
+              'Ubah Gambar',
+              style: GoogleFonts.openSans(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w400),
             ),
             onPressed: () => _getLocalImage(),
           )
@@ -108,7 +118,7 @@ class _UksInventoryState extends State<UksInventory> {
         await _picker.pickImage(
             source: ImageSource.gallery,
             imageQuality: 50,
-            maxWidth: 400);
+            maxWidth: 500);
 
     if (imageFile != null) {
       setState(() {
@@ -118,86 +128,182 @@ class _UksInventoryState extends State<UksInventory> {
   }
 
   Widget _buildNameField() {
-    return TextFormField(
-      decoration: InputDecoration(labelText: 'Nama Obat'),
-      initialValue: _currentInventory.name,
-      keyboardType: TextInputType.text,
-      style: TextStyle(fontSize: 20),
-      validator: (String? value) {
-        if (value!.isEmpty) {
-          return 'Nama Obat wajib diisi';
-        }
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+            labelText: "Nama Barang",
+            border: OutlineInputBorder(
+              borderSide:
+              BorderSide(color: Colors.blueAccent, width: 2),
+            ),
+            // hintText: _currentInventory.expirationDate,
+            floatingLabelBehavior: FloatingLabelBehavior.always),
+        initialValue: _currentInventory.name,
+        keyboardType: TextInputType.text,
+        style: GoogleFonts.openSans(fontSize: 20),
+        validator: (String? value) {
+          if (value!.isEmpty) {
+            return 'Nama barang wajib diisi';
+          }
 
-        if (value.length < 3 || value.length > 50) {
-          return 'Nama obat harus lebih dari tiga karakter';
-        }
+          if (value.length < 3 || value.length > 50) {
+            return 'Nama barang harus lebih dari tiga karakter';
+          }
 
-        return null;
-      },
-      onSaved: (String? value) {
-        _currentInventory.name = value!;
-      },
+          return null;
+        },
+        onSaved: (String? value) {
+          _currentInventory.name = value!;
+        },
+      ),
     );
   }
 
 
   Widget _buildCategoryField() {
-    return  DropdownButtonFormField(
-      decoration: InputDecoration(labelText: 'Kategori'),
-      value: currentInventory ?? _currentInventory.category,
-      onChanged: (String? value) {
-        setState(() => currentInventory = value as String);
-      },
-      onSaved: (String? value) {
-        _currentInventory.category = value!;
-      },
-      validator: (String? value) {
-        if (value!.isEmpty) {
-          return 'Kategori wajib diisi';
-        }
+    return  Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+            labelText: "Kategori",
+            border: OutlineInputBorder(
+              borderSide:
+              BorderSide(color: Colors.blueAccent, width: 2),
+            ),
+            // hintText: _currentInventory.expirationDate,
+            floatingLabelBehavior: FloatingLabelBehavior.always),
+        value: currentInventory ?? _currentInventory.category,
+        onChanged: (String? value) {
+          setState(() => currentInventory = value as String);
+        },
+        onSaved: (String? value) {
+          _currentInventory.category = value!;
+        },
+        validator: (String? value) {
+          if (value!.isEmpty) {
+            return 'Kategori wajib diisi';
+          }
 
-        return null;
-      },
-      items: mycategory.map((category) {
-        return DropdownMenuItem(
-          child: Text("$category"),
-          value: category,
-        );
-      }).toList(),
+          return null;
+        },
+        items: mycategory.map((category) {
+          return DropdownMenuItem(
+            child: Text("$category"),
+            value: category,
+          );
+        }).toList(),
+      ),
     );
   }
 
   Widget _buildStockField() {
-    return TextFormField(
-      decoration: InputDecoration(labelText: 'Stok'),
-      initialValue: _currentInventory.stock.toString(),
-      keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-      style: TextStyle(fontSize: 20),
-      validator: (String? value) {
-        if (value!.isEmpty) {
-          return 'Stok wajib diisi';
-        }
-        return null;
-      },
-      onSaved: (String? value) {
-        _currentInventory.stock = int.parse(value!);
-      },
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+            labelText: "Stok",
+            border: OutlineInputBorder(
+              borderSide:
+              BorderSide(color: Colors.blueAccent, width: 2),
+            ),
+           // hintText: _currentInventory.expirationDate,
+            floatingLabelBehavior: FloatingLabelBehavior.always),
+        initialValue: _currentInventory.stock.toString(),
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+        style: GoogleFonts.openSans(fontSize: 20),
+        validator: (String? value) {
+          if (value!.isEmpty) {
+            return 'Stok wajib diisi';
+          }
+          return null;
+        },
+        onSaved: (String? value) {
+          _currentInventory.stock = int.parse(value!);
+        },
+      ),
     );
   }
 
 
   _buildSubingredientField() {
-    return SizedBox(
-      width: 200,
-      child: TextField(
-        controller: subingredientController,
-        keyboardType: TextInputType.text,
-        decoration: InputDecoration(labelText: 'Komposisi'),
-        style: TextStyle(fontSize: 20),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20.0, 10.0, 10.0, 20.0),
+      child: SizedBox(
+        width: 200,
+        child: TextField(
+          controller: subingredientController,
+          keyboardType: TextInputType.text,
+          decoration: InputDecoration(
+              labelText: "Komposisi",
+              border: OutlineInputBorder(
+                borderSide:
+                BorderSide(color: Colors.blueAccent, width: 2),
+              ),
+              // hintText: _currentInventory.expirationDate,
+              floatingLabelBehavior: FloatingLabelBehavior.always),
+          style: GoogleFonts.openSans(fontSize: 20),
+        ),
       ),
     );
   }
+
+  _buildExpirationDate() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20.0, 0.0, 40.0, 20.0),
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: SizedBox(
+          width: 200,
+            child: TextFormField (
+              controller: dateinput , //editing controller of this TextField
+              decoration: InputDecoration(
+                  labelText: "Kadaluarsa",
+                  border: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.blueAccent, width: 2),
+                  ),
+                  hintText: _currentInventory.expirationDate,
+                  hintStyle: GoogleFonts.openSans(color: Colors.black,),
+                  floatingLabelBehavior: FloatingLabelBehavior.always),
+              //readOnly: true,  //set it true, so that user will not able to edit text
+              onTap: () async {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                DateTime? pickedDate = await showDatePicker(
+                    context: context, initialDate: DateTime.now(),
+                    firstDate: DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                    lastDate: DateTime(2101)
+                );
+
+                if(pickedDate != null ){
+                  print(pickedDate);  //pickedDate output format => 2021-03-10 00:00:00.000
+                  String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+                  print(formattedDate); //formatted date output using intl package =>  2021-03-16
+                  //you can implement different kind of Date Format here according to your requirement
+                  setState(() {
+                    dateinput.text = formattedDate; //set output date to TextField value.
+                  });
+                }else{
+                  print("Tanggal belum dipilih");
+                }
+                print(dateinput.text);
+                },
+
+              onSaved: (String? value) {
+                if (dateinput.text.isEmpty){
+                  _currentInventory.expirationDate =  _currentInventory.expirationDate;
+                }
+                else
+                _currentInventory.expirationDate = dateinput.text;
+              },
+            )
+        ),
+      ),
+    );
+  }
+
+
 
   _onInventoryUploaded(Inventory inventory) {
     InventoryNotifier inventoryNotifier = Provider.of<InventoryNotifier>(context, listen: false);
@@ -242,62 +348,67 @@ class _UksInventoryState extends State<UksInventory> {
     return Scaffold(
       appBar: AppBar (title: Text('Form Inventaris')),
         body: SingleChildScrollView(
-        padding: EdgeInsets.all(32),
+        //padding: EdgeInsets.all(10),
     child: Form(
-    key: _formKey,
-    autovalidate: true,
+    autovalidateMode: AutovalidateMode.always, key: _formKey,
     child: Column(children: <Widget>[
     _showImage(),
       SizedBox(height: 16),
       Text(
-        widget.isUpdating ? "Edit Inventaris" : "Buat Inventaris",
+        widget.isUpdating ? "Ubah Detail Barang" : "Masukan Barang Baru",
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 30),
+        style: GoogleFonts.openSans(
+            fontSize: 25,
+            fontWeight: FontWeight.w600,),
       ),
       SizedBox(height: 16),
       _imageFile == null && _imageUrl == "" ?
       ButtonTheme(
-        child: RaisedButton(
+        child: ElevatedButton(
           onPressed: () => {
             _getLocalImage(),
           },
           child: Text(
             'Tambah Gambar',
-            style: TextStyle(color: Colors.white),
+            style: GoogleFonts.openSans(color: Colors.white),
           ),
         ),
       ) : SizedBox(height:0),
         _buildNameField(),
         _buildCategoryField(),
         _buildStockField(),
-        SizedBox(height: 16),
+        _buildExpirationDate(),
       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           _buildSubingredientField(),
           ButtonTheme(
-            child: RaisedButton(
-              child: Text('Tambah', style: TextStyle(color: Colors.white)),
+            child: ElevatedButton(
+              child: Text('tambahkan', style: GoogleFonts.openSans(color: Colors.white, fontSize: 12.0)),
              onPressed: () => _addSubingredient(subingredientController.text),
             ),
           )
         ],
       ),
       GridView.count(
+        childAspectRatio: MediaQuery.of(context).size.height / 600,
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
-        padding: EdgeInsets.all(8),
-        crossAxisCount: 3,
-        crossAxisSpacing: 4,
-        mainAxisSpacing: 4,
+        padding: EdgeInsets.all(20),
+        crossAxisCount: 4,
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 3,
         children: _subingredients
             .map(
               (ingredient) => Card(
-            color: Colors.black54,
-            child: Center(
-              child: Text(
-                ingredient,
-                style: TextStyle(color: Colors.white, fontSize: 14),
+            color: Colors.blue,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  ingredient,
+                  style: GoogleFonts.openSans(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ),
@@ -309,8 +420,10 @@ class _UksInventoryState extends State<UksInventory> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-         // FocusScope.of(context).requestFocus(new FocusNode());
+          FocusScope.of(context).requestFocus(new FocusNode());
           _saveInventory();
+       //   Navigator.pop(context);
+
         },
         child: Icon(Icons.save),
         foregroundColor: Colors.white,

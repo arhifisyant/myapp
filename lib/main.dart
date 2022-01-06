@@ -26,10 +26,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Coding with Curry',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        accentColor: Colors.blue,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(secondary: Colors.blue),
       ),
       home: Consumer<AuthNotifier>(
         builder: (context, notifier, child) {

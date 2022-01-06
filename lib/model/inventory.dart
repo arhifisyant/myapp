@@ -6,6 +6,7 @@ class Inventory {
   String name = "";
   String category = "";
   int stock = 0;
+  String expirationDate = "";
   String image = "";
   //late List subIngredients;
   List subIngredients = [];
@@ -19,6 +20,7 @@ class Inventory {
     name = data['name'];
     category = data['category'];
     stock = data['stock'];
+    expirationDate = data['expirationDate'];
     image = data['image'];
     subIngredients = data['subIngredients'];
     createdAt = data['createdAt'];
@@ -30,6 +32,7 @@ class Inventory {
       'id': id,
       'name': name,
       'category': category,
+      'expirationDate' : expirationDate,
       'stock' : stock,
       'image': image,
       'subIngredients': subIngredients,
